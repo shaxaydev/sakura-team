@@ -3,7 +3,7 @@
 Personal fork of Plane Community v1.4.2, commit `5f7d92784c403f76284f0f16718f320221dc7fec`.
 
 - Production: https://team.borili.uz
-- Workspace: Sushi bar Sakura; time zone: Asia/Tashkent.
+- Workspace: ITPU × Sakura; time zone: Asia/Tashkent.
 - Source: https://github.com/shaxaydev/sakura-team
 - Upstream licensing and copyright notices are retained. `apps/api/plane/utils/email.py` has a commercial header in this upstream release; this inconsistency is recorded for clarification before custom distribution.
 
@@ -34,9 +34,15 @@ GitHub Environment `production`: `VPS_SSH_KEY`, `VPS_KNOWN_HOSTS`. GHCR uses the
 - `/opt/sakura-team/backups/`: database backups before deployment.
 - Shared Caddy handles TLS and routing. No host ports are published by this Compose project.
 - Service names all start with `sakura-` to avoid collisions with ERP service DNS names on the shared Docker network.
-- Password login, closed registration, no SMTP configuration. Initial admin credentials are stored outside Git.
+- Password login and closed registration. Initial admin credentials are stored outside Git.
 
 The upstream workflows are preserved in `.github/upstream-workflows/`; `.github/workflows/sakura.yml` is the active team pipeline.
+
+## Mail
+
+Resend SMTP was configured on 28 October 2026 through Plane's instance-admin API. Sender: `ITPU × Sakura <team@borili.uz>`; host `smtp.resend.com`, port 587, STARTTLS. The credential is encrypted in Plane's `InstanceConfiguration`, outside Git. Update it in instance settings when rotating the Resend key. The default `SKIP_ENV_VAR=1` reads these saved values; do not change that setting without migrating configuration.
+
+Registration remains invitation-only and password-based; magic-link login is disabled. Existing invitations can be copied from Workspace Settings → Members and shared manually. A new user should create/sign into their account with the invited email before accepting the invitation. SMTP acceptance confirms sending; final mailbox delivery is separate.
 
 ## Backups and rollback
 
