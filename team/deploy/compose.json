@@ -417,7 +417,7 @@
       ]
     },
     "sakura-storage": {
-      "image": "minio/minio:RELEASE.2025-04-22T22-12-26Z",
+      "image": "docker.io/pgsty/silo:RELEASE.2026-09-16T00-00-00Z",
       "command": "server /data --console-address :9001",
       "restart": "unless-stopped",
       "environment": {
