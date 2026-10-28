@@ -28,7 +28,7 @@ with transaction.atomic():
     if created:
         user.set_password(os.environ["ADMIN_PASSWORD"])
         user.save()
-    Profile.objects.get_or_create(user=user)
+    Profile.objects.get_or_create(user=user, defaults={"is_onboarded": True, "onboarding_step": {"profile_complete": True, "workspace_create": True, "workspace_invite": False, "workspace_join": True}})
     InstanceAdmin.objects.get_or_create(instance=instance, user=user)
     instance.is_setup_done = True
     instance.is_signup_screen_visited = True

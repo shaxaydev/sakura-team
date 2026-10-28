@@ -29,3 +29,15 @@ GitHub Environment `production`: `VPS_SSH_KEY`, `VPS_KNOWN_HOSTS`. GHCR uses the
 - Password login, closed registration, no SMTP configuration. Initial admin credentials are stored outside Git.
 
 The upstream workflows are preserved in `.github/upstream-workflows/`; `.github/workflows/sakura.yml` is the active team pipeline.
+
+## Backups and rollback
+
+Create a database and upload snapshot:
+
+```sh
+bash /opt/sakura-team/current/team/deploy/backup.sh
+```
+
+The script checks gzip/tar integrity. A full restore rehearsal is a separate operation. Copy backups off the VPS regularly. Never run `down -v` or a global Docker prune on this shared server.
+
+Runtime rollback: restore `images.previous.env` as `images.env` and start the previous release's Compose file under project name `sakura-team`. A migration can change the schema; runtime rollback does not undo migrations. Database restore requires stopping only Sakura writers, selecting the matching dump, and then starting the matching release. Preserve current data before restoring.

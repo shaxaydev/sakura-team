@@ -19,6 +19,7 @@ jobs:
         run: |
           bash -n team/deploy/*.sh
           python3 -m py_compile team/deploy/bootstrap.py
+          python3 -m unittest discover -s team/tests -v
           python3 -m json.tool team/deploy/compose.json > /dev/null
           docker compose --env-file team/deploy/validation.env -f team/deploy/compose.json config --quiet
   build:

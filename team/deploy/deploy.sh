@@ -50,4 +50,6 @@ done
 curl -fsS https://borili.uz/api/health > /dev/null
 curl -fsS https://app.gorillax.uz/api/health > /dev/null
 ln -sfn "$release" "$root/current"
+install -m 700 "$release/team/deploy/deploy.sh" "$root/bin/deploy.sh"
+install -m 700 "$release/team/deploy/ci-entry.sh" "$root/bin/ci-entry.sh"
 echo "Sakura deployed: $sha"

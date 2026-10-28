@@ -333,8 +333,8 @@
           "condition": "service_healthy"
         }
       },
-      "mem_limit": "512m",
-      "cpus": 0.5,
+      "mem_limit": "1024m",
+      "cpus": 2.0,
       "logging": {
         "driver": "json-file",
         "options": {
