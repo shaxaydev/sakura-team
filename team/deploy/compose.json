@@ -1,0 +1,450 @@
+{
+  "name": "sakura-team",
+  "services": {
+    "sakura-web": {
+      "image": "${IMAGE_PREFIX:-ghcr.io/shaxaydev/sakura-team}-frontend:${APP_TAG:?required}",
+      "restart": "unless-stopped",
+      "networks": [
+        "default",
+        "edge"
+      ],
+      "mem_limit": "768m",
+      "cpus": 1.0,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    },
+    "sakura-admin": {
+      "image": "${IMAGE_PREFIX:-ghcr.io/shaxaydev/sakura-team}-admin:${APP_TAG:?required}",
+      "restart": "unless-stopped",
+      "networks": [
+        "default",
+        "edge"
+      ],
+      "mem_limit": "768m",
+      "cpus": 1.0,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    },
+    "sakura-space": {
+      "image": "${IMAGE_PREFIX:-ghcr.io/shaxaydev/sakura-team}-space:${APP_TAG:?required}",
+      "restart": "unless-stopped",
+      "networks": [
+        "default",
+        "edge"
+      ],
+      "mem_limit": "768m",
+      "cpus": 1.0,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    },
+    "sakura-live": {
+      "image": "${IMAGE_PREFIX:-ghcr.io/shaxaydev/sakura-team}-live:${APP_TAG:?required}",
+      "restart": "unless-stopped",
+      "networks": [
+        "default",
+        "edge"
+      ],
+      "mem_limit": "768m",
+      "cpus": 1.0,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "API_BASE_URL": "http://sakura-api:8000",
+        "LIVE_SERVER_SECRET_KEY": "${LIVE_SERVER_SECRET_KEY:?required}",
+        "REDIS_URL": "redis://sakura-redis:6379/"
+      }
+    },
+    "sakura-api": {
+      "image": "${IMAGE_PREFIX:-ghcr.io/shaxaydev/sakura-team}-backend:${APP_TAG:?required}",
+      "command": "./bin/docker-entrypoint-api.sh",
+      "environment": {
+        "WEB_URL": "https://team.borili.uz",
+        "DEBUG": "0",
+        "CORS_ALLOWED_ORIGINS": "https://team.borili.uz",
+        "GUNICORN_WORKERS": "2",
+        "SECRET_KEY": "${SECRET_KEY:?required}",
+        "DATABASE_URL": "postgresql://plane:${POSTGRES_PASSWORD:?required}@sakura-db:5432/plane",
+        "PGHOST": "sakura-db",
+        "PGDATABASE": "plane",
+        "POSTGRES_DB": "plane",
+        "POSTGRES_USER": "plane",
+        "POSTGRES_PASSWORD": "${POSTGRES_PASSWORD:?required}",
+        "REDIS_URL": "redis://sakura-redis:6379/",
+        "REDIS_HOST": "sakura-redis",
+        "REDIS_PORT": "6379",
+        "AMQP_URL": "amqp://plane:${RABBITMQ_PASSWORD:?required}@sakura-mq:5672/plane",
+        "RABBITMQ_HOST": "sakura-mq",
+        "RABBITMQ_USER": "plane",
+        "RABBITMQ_PASSWORD": "${RABBITMQ_PASSWORD:?required}",
+        "RABBITMQ_VHOST": "plane",
+        "USE_MINIO": "1",
+        "AWS_S3_ENDPOINT_URL": "http://sakura-storage:9000",
+        "AWS_S3_BUCKET_NAME": "uploads",
+        "AWS_ACCESS_KEY_ID": "${AWS_ACCESS_KEY_ID:?required}",
+        "AWS_SECRET_ACCESS_KEY": "${AWS_SECRET_ACCESS_KEY:?required}",
+        "AWS_REGION": "us-east-1",
+        "MINIO_ENDPOINT_SSL": "0",
+        "MINIO_ROOT_USER": "${AWS_ACCESS_KEY_ID:?required}",
+        "MINIO_ROOT_PASSWORD": "${AWS_SECRET_ACCESS_KEY:?required}",
+        "LIVE_SERVER_SECRET_KEY": "${LIVE_SERVER_SECRET_KEY:?required}",
+        "API_KEY_RATE_LIMIT": "120/minute",
+        "ENABLE_SIGNUP": "0",
+        "ENABLE_EMAIL_PASSWORD": "1",
+        "ENABLE_MAGIC_LINK_LOGIN": "0",
+        "EMAIL_HOST": "",
+        "FILE_SIZE_LIMIT": "5242880",
+        "APP_DOMAIN": "team.borili.uz",
+        "BUCKET_NAME": "uploads"
+      },
+      "restart": "unless-stopped",
+      "networks": [
+        "default",
+        "edge"
+      ],
+      "depends_on": {
+        "sakura-db": {
+          "condition": "service_healthy"
+        },
+        "sakura-redis": {
+          "condition": "service_healthy"
+        },
+        "sakura-mq": {
+          "condition": "service_healthy"
+        }
+      },
+      "mem_limit": "1536m",
+      "cpus": 1.5,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    },
+    "sakura-worker": {
+      "image": "${IMAGE_PREFIX:-ghcr.io/shaxaydev/sakura-team}-backend:${APP_TAG:?required}",
+      "command": "./bin/docker-entrypoint-worker.sh",
+      "environment": {
+        "WEB_URL": "https://team.borili.uz",
+        "DEBUG": "0",
+        "CORS_ALLOWED_ORIGINS": "https://team.borili.uz",
+        "GUNICORN_WORKERS": "2",
+        "SECRET_KEY": "${SECRET_KEY:?required}",
+        "DATABASE_URL": "postgresql://plane:${POSTGRES_PASSWORD:?required}@sakura-db:5432/plane",
+        "PGHOST": "sakura-db",
+        "PGDATABASE": "plane",
+        "POSTGRES_DB": "plane",
+        "POSTGRES_USER": "plane",
+        "POSTGRES_PASSWORD": "${POSTGRES_PASSWORD:?required}",
+        "REDIS_URL": "redis://sakura-redis:6379/",
+        "REDIS_HOST": "sakura-redis",
+        "REDIS_PORT": "6379",
+        "AMQP_URL": "amqp://plane:${RABBITMQ_PASSWORD:?required}@sakura-mq:5672/plane",
+        "RABBITMQ_HOST": "sakura-mq",
+        "RABBITMQ_USER": "plane",
+        "RABBITMQ_PASSWORD": "${RABBITMQ_PASSWORD:?required}",
+        "RABBITMQ_VHOST": "plane",
+        "USE_MINIO": "1",
+        "AWS_S3_ENDPOINT_URL": "http://sakura-storage:9000",
+        "AWS_S3_BUCKET_NAME": "uploads",
+        "AWS_ACCESS_KEY_ID": "${AWS_ACCESS_KEY_ID:?required}",
+        "AWS_SECRET_ACCESS_KEY": "${AWS_SECRET_ACCESS_KEY:?required}",
+        "AWS_REGION": "us-east-1",
+        "MINIO_ENDPOINT_SSL": "0",
+        "MINIO_ROOT_USER": "${AWS_ACCESS_KEY_ID:?required}",
+        "MINIO_ROOT_PASSWORD": "${AWS_SECRET_ACCESS_KEY:?required}",
+        "LIVE_SERVER_SECRET_KEY": "${LIVE_SERVER_SECRET_KEY:?required}",
+        "API_KEY_RATE_LIMIT": "120/minute",
+        "ENABLE_SIGNUP": "0",
+        "ENABLE_EMAIL_PASSWORD": "1",
+        "ENABLE_MAGIC_LINK_LOGIN": "0",
+        "EMAIL_HOST": "",
+        "FILE_SIZE_LIMIT": "5242880",
+        "APP_DOMAIN": "team.borili.uz",
+        "BUCKET_NAME": "uploads"
+      },
+      "restart": "unless-stopped",
+      "networks": [
+        "default"
+      ],
+      "depends_on": {
+        "sakura-db": {
+          "condition": "service_healthy"
+        },
+        "sakura-redis": {
+          "condition": "service_healthy"
+        },
+        "sakura-mq": {
+          "condition": "service_healthy"
+        }
+      },
+      "mem_limit": "1536m",
+      "cpus": 1.5,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    },
+    "sakura-beat": {
+      "image": "${IMAGE_PREFIX:-ghcr.io/shaxaydev/sakura-team}-backend:${APP_TAG:?required}",
+      "command": "./bin/docker-entrypoint-beat.sh",
+      "environment": {
+        "WEB_URL": "https://team.borili.uz",
+        "DEBUG": "0",
+        "CORS_ALLOWED_ORIGINS": "https://team.borili.uz",
+        "GUNICORN_WORKERS": "2",
+        "SECRET_KEY": "${SECRET_KEY:?required}",
+        "DATABASE_URL": "postgresql://plane:${POSTGRES_PASSWORD:?required}@sakura-db:5432/plane",
+        "PGHOST": "sakura-db",
+        "PGDATABASE": "plane",
+        "POSTGRES_DB": "plane",
+        "POSTGRES_USER": "plane",
+        "POSTGRES_PASSWORD": "${POSTGRES_PASSWORD:?required}",
+        "REDIS_URL": "redis://sakura-redis:6379/",
+        "REDIS_HOST": "sakura-redis",
+        "REDIS_PORT": "6379",
+        "AMQP_URL": "amqp://plane:${RABBITMQ_PASSWORD:?required}@sakura-mq:5672/plane",
+        "RABBITMQ_HOST": "sakura-mq",
+        "RABBITMQ_USER": "plane",
+        "RABBITMQ_PASSWORD": "${RABBITMQ_PASSWORD:?required}",
+        "RABBITMQ_VHOST": "plane",
+        "USE_MINIO": "1",
+        "AWS_S3_ENDPOINT_URL": "http://sakura-storage:9000",
+        "AWS_S3_BUCKET_NAME": "uploads",
+        "AWS_ACCESS_KEY_ID": "${AWS_ACCESS_KEY_ID:?required}",
+        "AWS_SECRET_ACCESS_KEY": "${AWS_SECRET_ACCESS_KEY:?required}",
+        "AWS_REGION": "us-east-1",
+        "MINIO_ENDPOINT_SSL": "0",
+        "MINIO_ROOT_USER": "${AWS_ACCESS_KEY_ID:?required}",
+        "MINIO_ROOT_PASSWORD": "${AWS_SECRET_ACCESS_KEY:?required}",
+        "LIVE_SERVER_SECRET_KEY": "${LIVE_SERVER_SECRET_KEY:?required}",
+        "API_KEY_RATE_LIMIT": "120/minute",
+        "ENABLE_SIGNUP": "0",
+        "ENABLE_EMAIL_PASSWORD": "1",
+        "ENABLE_MAGIC_LINK_LOGIN": "0",
+        "EMAIL_HOST": "",
+        "FILE_SIZE_LIMIT": "5242880",
+        "APP_DOMAIN": "team.borili.uz",
+        "BUCKET_NAME": "uploads"
+      },
+      "restart": "unless-stopped",
+      "networks": [
+        "default"
+      ],
+      "depends_on": {
+        "sakura-db": {
+          "condition": "service_healthy"
+        },
+        "sakura-redis": {
+          "condition": "service_healthy"
+        },
+        "sakura-mq": {
+          "condition": "service_healthy"
+        }
+      },
+      "mem_limit": "512m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    },
+    "sakura-migrator": {
+      "image": "${IMAGE_PREFIX:-ghcr.io/shaxaydev/sakura-team}-backend:${APP_TAG:?required}",
+      "command": "./bin/docker-entrypoint-migrator.sh",
+      "environment": {
+        "WEB_URL": "https://team.borili.uz",
+        "DEBUG": "0",
+        "CORS_ALLOWED_ORIGINS": "https://team.borili.uz",
+        "GUNICORN_WORKERS": "2",
+        "SECRET_KEY": "${SECRET_KEY:?required}",
+        "DATABASE_URL": "postgresql://plane:${POSTGRES_PASSWORD:?required}@sakura-db:5432/plane",
+        "PGHOST": "sakura-db",
+        "PGDATABASE": "plane",
+        "POSTGRES_DB": "plane",
+        "POSTGRES_USER": "plane",
+        "POSTGRES_PASSWORD": "${POSTGRES_PASSWORD:?required}",
+        "REDIS_URL": "redis://sakura-redis:6379/",
+        "REDIS_HOST": "sakura-redis",
+        "REDIS_PORT": "6379",
+        "AMQP_URL": "amqp://plane:${RABBITMQ_PASSWORD:?required}@sakura-mq:5672/plane",
+        "RABBITMQ_HOST": "sakura-mq",
+        "RABBITMQ_USER": "plane",
+        "RABBITMQ_PASSWORD": "${RABBITMQ_PASSWORD:?required}",
+        "RABBITMQ_VHOST": "plane",
+        "USE_MINIO": "1",
+        "AWS_S3_ENDPOINT_URL": "http://sakura-storage:9000",
+        "AWS_S3_BUCKET_NAME": "uploads",
+        "AWS_ACCESS_KEY_ID": "${AWS_ACCESS_KEY_ID:?required}",
+        "AWS_SECRET_ACCESS_KEY": "${AWS_SECRET_ACCESS_KEY:?required}",
+        "AWS_REGION": "us-east-1",
+        "MINIO_ENDPOINT_SSL": "0",
+        "MINIO_ROOT_USER": "${AWS_ACCESS_KEY_ID:?required}",
+        "MINIO_ROOT_PASSWORD": "${AWS_SECRET_ACCESS_KEY:?required}",
+        "LIVE_SERVER_SECRET_KEY": "${LIVE_SERVER_SECRET_KEY:?required}",
+        "API_KEY_RATE_LIMIT": "120/minute",
+        "ENABLE_SIGNUP": "0",
+        "ENABLE_EMAIL_PASSWORD": "1",
+        "ENABLE_MAGIC_LINK_LOGIN": "0",
+        "EMAIL_HOST": "",
+        "FILE_SIZE_LIMIT": "5242880",
+        "APP_DOMAIN": "team.borili.uz",
+        "BUCKET_NAME": "uploads"
+      },
+      "restart": "no",
+      "networks": [
+        "default"
+      ],
+      "depends_on": {
+        "sakura-db": {
+          "condition": "service_healthy"
+        },
+        "sakura-redis": {
+          "condition": "service_healthy"
+        },
+        "sakura-mq": {
+          "condition": "service_healthy"
+        }
+      },
+      "mem_limit": "512m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    },
+    "sakura-db": {
+      "image": "postgres:15.7-alpine",
+      "restart": "unless-stopped",
+      "environment": {
+        "POSTGRES_USER": "plane",
+        "POSTGRES_DB": "plane",
+        "POSTGRES_PASSWORD": "${POSTGRES_PASSWORD:?required}"
+      },
+      "volumes": [
+        "pgdata:/var/lib/postgresql/data"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U plane -d plane"
+        ],
+        "interval": "5s",
+        "timeout": "3s",
+        "retries": 30
+      },
+      "mem_limit": "768m",
+      "networks": [
+        "default"
+      ]
+    },
+    "sakura-redis": {
+      "image": "valkey/valkey:7.2.11-alpine",
+      "restart": "unless-stopped",
+      "volumes": [
+        "redisdata:/data"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "valkey-cli",
+          "ping"
+        ],
+        "interval": "5s",
+        "timeout": "3s",
+        "retries": 30
+      },
+      "mem_limit": "256m",
+      "networks": [
+        "default"
+      ]
+    },
+    "sakura-mq": {
+      "image": "rabbitmq:3.13.6-management-alpine",
+      "restart": "unless-stopped",
+      "environment": {
+        "RABBITMQ_DEFAULT_USER": "plane",
+        "RABBITMQ_DEFAULT_PASS": "${RABBITMQ_PASSWORD:?required}",
+        "RABBITMQ_DEFAULT_VHOST": "plane"
+      },
+      "volumes": [
+        "rabbitmq:/var/lib/rabbitmq"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "rabbitmq-diagnostics",
+          "-q",
+          "ping"
+        ],
+        "interval": "10s",
+        "timeout": "5s",
+        "retries": 30
+      },
+      "mem_limit": "512m",
+      "networks": [
+        "default"
+      ]
+    },
+    "sakura-storage": {
+      "image": "minio/minio:RELEASE.2025-04-22T22-12-26Z",
+      "command": "server /data --console-address :9001",
+      "restart": "unless-stopped",
+      "environment": {
+        "MINIO_ROOT_USER": "${AWS_ACCESS_KEY_ID:?required}",
+        "MINIO_ROOT_PASSWORD": "${AWS_SECRET_ACCESS_KEY:?required}"
+      },
+      "volumes": [
+        "uploads:/data"
+      ],
+      "mem_limit": "512m",
+      "networks": [
+        "default",
+        "edge"
+      ]
+    }
+  },
+  "networks": {
+    "default": {},
+    "edge": {
+      "external": true,
+      "name": "rs-erp_default"
+    }
+  },
+  "volumes": {
+    "pgdata": {},
+    "redisdata": {},
+    "rabbitmq": {},
+    "uploads": {}
+  }
+}

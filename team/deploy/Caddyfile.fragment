@@ -1,0 +1,20 @@
+team.borili.uz {
+    encode zstd gzip
+    header X-Robots-Tag "noindex, nofollow"
+    request_body {
+        max_size 5MB
+    }
+    route {
+        redir /spaces /spaces/ 308
+        reverse_proxy /spaces/* sakura-space:3000
+        redir /god-mode /god-mode/ 308
+        reverse_proxy /god-mode/* sakura-admin:3000
+        reverse_proxy /live/* sakura-live:3000
+        reverse_proxy /api/* sakura-api:8000
+        reverse_proxy /auth/* sakura-api:8000
+        reverse_proxy /static/* sakura-api:8000
+        reverse_proxy /uploads/* sakura-storage:9000
+        reverse_proxy /uploads sakura-storage:9000
+        reverse_proxy sakura-web:3000
+    }
+}
