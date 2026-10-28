@@ -7,6 +7,14 @@ Personal fork of Plane Community v1.4.2, commit `5f7d92784c403f76284f0f16718f320
 - Source: https://github.com/shaxaydev/sakura-team
 - Upstream licensing and copyright notices are retained. `apps/api/plane/utils/email.py` has a commercial header in this upstream release; this inconsistency is recorded for clarification before custom distribution.
 
+## Team branding
+
+The web app uses an `ITPU × Sakura` logo, favicon, login labels and browser metadata. Plane's board, navigation, theme and dashboard are unchanged. The login footer links to this source repository and retains Plane attribution.
+
+ITPU artwork is from the university's [official website](https://itpu.uz/en): `logo_menu.svg` and `favicon.png`. Files are served locally from `apps/web/public/sakura/`; the light-background logo changes only the white lettering to dark. This is Team 2's student workspace.
+
+Workspace name and uploaded logo can be changed in Workspace Settings → General. The bundled ITPU icon is a fallback for the `ITPU × Sakura` workspace when no logo has been uploaded. Project members and Project Lead are managed separately in project settings; Project Lead does not grant admin permissions.
+
 ## Update flow
 
 1. Branch from `main`, make a change, open a pull request.

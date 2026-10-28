@@ -18,7 +18,7 @@ with transaction.atomic():
     instance = Instance.objects.first()
     if instance is None:
         instance = Instance.objects.create(
-            instance_name="Sushi bar Sakura", instance_id=uuid.uuid4().hex,
+            instance_name="ITPU × Sakura", instance_id=uuid.uuid4().hex,
             current_version="v1.4.2", last_checked_at=timezone.now(),
         )
     user, created = User.objects.get_or_create(
@@ -33,12 +33,12 @@ with transaction.atomic():
     instance.is_setup_done = True
     instance.is_signup_screen_visited = True
     instance.is_telemetry_enabled = False
-    instance.instance_name = "Sushi bar Sakura"
+    instance.instance_name = "ITPU × Sakura"
     instance.domain = "team.borili.uz"
     instance.save()
     for key, value in {"ENABLE_SIGNUP": "0", "ENABLE_MAGIC_LINK_LOGIN": "0", "ENABLE_EMAIL_PASSWORD": "1"}.items():
         InstanceConfiguration.objects.update_or_create(key=key, defaults={"value": value, "category": "AUTHENTICATION", "is_encrypted": False})
-    workspace, _ = Workspace.objects.get_or_create(slug="sakura", defaults={"name": "Sushi bar Sakura", "owner": user, "timezone": "Asia/Tashkent"})
+    workspace, _ = Workspace.objects.get_or_create(slug="sakura", defaults={"name": "ITPU × Sakura", "owner": user, "timezone": "Asia/Tashkent"})
     WorkspaceMember.objects.get_or_create(workspace=workspace, member=user, defaults={"role": 20})
     project, _ = Project.objects.get_or_create(workspace=workspace, identifier="SAK", defaults={"name": "Sakura — Teamwork 2026", "project_lead": user, "network": 0, "cycle_view": True, "module_view": True, "timezone": "Asia/Tashkent"})
     ProjectMember.objects.get_or_create(project=project, workspace=workspace, member=user, defaults={"role": 20})

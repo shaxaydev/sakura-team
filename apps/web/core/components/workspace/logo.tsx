@@ -33,6 +33,8 @@ export const WorkspaceLogo = observer(function WorkspaceLogo(props: Props) {
           className="absolute top-0 left-0 h-full w-full rounded-md object-cover"
           alt={t("aria_labels.projects_sidebar.workspace_logo")}
         />
+      ) : props.name === "ITPU × Sakura" ? (
+        <img src="/sakura/favicon.png" alt="ITPU" className="h-full w-full rounded-md object-contain" />
       ) : (
         (props.name?.[0] ?? "...")
       )}
